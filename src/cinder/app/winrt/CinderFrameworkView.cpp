@@ -31,15 +31,17 @@
 #include <wrl/client.h>
 #include <agile.h>
 
-using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::UI::Core;
-using namespace Windows::UI::Popups;
 using namespace Windows::UI::Input;
-using namespace Windows::System;
 using namespace Windows::Foundation;
+using namespace Windows::Foundation::Collections;
 using namespace Windows::Graphics::Display;
+using namespace Windows::Graphics::Holographic;
+using namespace Windows::Perception::Spatial;
+using namespace Microsoft::WRL;
+using namespace Platform;
 
 
 CinderFrameworkView::CinderFrameworkView()
@@ -91,6 +93,24 @@ void CinderFrameworkView::SetWindow(CoreWindow^ window)
 		ref new TypedEventHandler<CoreWindow^, CharacterReceivedEventArgs^>(this, &CinderFrameworkView::OnCharacterReceived);
 #endif 
 }
+// Initializes scene resources
+void CinderFrameworkView::Load(Platform::String^ entryPoint)
+{
+	
+}
+
+
+
+// Application lifecycle event handler.
+void CinderFrameworkView::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
+{
+	// Run() won't start until the CoreWindow is activated.
+	CoreWindow::GetForCurrentThread()->Activate();
+}
+
+
+
+
 
 void CinderFrameworkView::Load( Platform::String^ entryPoint )
 {
@@ -98,7 +118,7 @@ void CinderFrameworkView::Load( Platform::String^ entryPoint )
 
 void CinderFrameworkView::Run()
 {
-	mApp = cinder::app::AppWinRt::create();
+	mApp = cinder::CinderFrameworkView::AppWinRt::create();
 	mApp->run( CoreWindow::GetForCurrentThread() );
 }
 

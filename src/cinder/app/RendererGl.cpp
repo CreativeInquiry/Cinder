@@ -291,13 +291,21 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
+void RendererGl::setup(Windows::UI::Core::CoreWindow^ wnd, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
 	if( ! mImpl )
 		mImpl = new RendererImplGlAngle( this );
 	if( ! mImpl->initialize( wnd, sharedRenderer ) )
 		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
+}
+void RendererGl::setup(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer)
+{
+	mHolographicSpace = holographicSpace;
+	if (!mImpl)
+		mImpl = new RendererImplGlAngle(this);
+	if (!mImpl->initialize(holographicSpace, sharedRenderer))
+		throw ExcRendererAllocation("RendererImplGlMsw initialization failed.");
 }
 
 void RendererGl::prepareToggleFullScreen()
