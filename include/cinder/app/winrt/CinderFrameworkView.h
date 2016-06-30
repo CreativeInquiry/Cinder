@@ -60,6 +60,7 @@ ref class CinderFrameworkView sealed : public Windows::ApplicationModel::Core::I
 	void OnCharacterReceived( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CharacterReceivedEventArgs^ args );
 
   private:
+
 	cinder::app::AppWinRt*	mApp;
 };
 

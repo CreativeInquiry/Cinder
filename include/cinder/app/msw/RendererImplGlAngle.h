@@ -25,9 +25,20 @@
 
 #include "cinder/app/AppBase.h"
 #include "cinder/app/msw/RendererImplMsw.h"
-#include "EGL/egl.h"
-#include "EGL/eglext.h"
-#include "EGL/eglplatform.h"
+#define GL_GLEXT_PROTOTYPES
+#include <wrl.h>
+
+// OpenGL ES includes
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+
+// EGL includes
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <EGL/eglplatform.h>
+
+// ANGLE include for Windows Store
+#include <angle_windowsstore.h>
 
 namespace cinder { namespace gl {
 	class Context;
@@ -43,7 +54,11 @@ class RendererImplGlAngle : public RendererImplMsw {
 #if defined( CINDER_MSW_DESKTOP )	
 	bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 #elif defined( CINDER_UWP )
-	bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+	//bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+	bool	initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer) override;
+	bool	initialize(Windows::UI::Core::CoreWindow^ wnd, RendererRef sharedRenderer) override;
+	bool	initializeInner(::Platform::Object^ windowBasis, RendererRef sharedRenderer);
+	void	CleanupEGL();
 #endif
 	void	prepareToggleFullScreen() override;
 	void	finishToggleFullScreen() override;
@@ -64,6 +79,10 @@ class RendererImplGlAngle : public RendererImplMsw {
 	EGLContext		mContext;
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
+	Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace = nullptr;
+
+	// The world coordinate system. In this example, a reference frame placed in the environment.
+	Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ mStationaryReferenceFrame = nullptr;
 #if defined( CINDER_MSW_DESKTOP )
 	HDC				mDc;
 #endif

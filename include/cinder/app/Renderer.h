@@ -102,7 +102,8 @@ class Renderer {
 	virtual HWND				getHwnd() = 0;
 	virtual HDC					getDc() { return NULL; }
 #elif defined( CINDER_UWP )
-	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
+	virtual void setup(Windows::UI::Core::CoreWindow^ wnd, RendererRef sharedRenderer ) = 0;
+	virtual void setup(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer) = 0;
 #elif defined( CINDER_ANDROID )
 	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;	
 #elif defined( CINDER_LINUX )

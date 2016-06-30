@@ -180,7 +180,8 @@ class RendererGl : public Renderer {
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
 #elif defined( CINDER_UWP )
-	void			setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+	void			setup(Windows::UI::Core::CoreWindow^ wnd, RendererRef sharedRenderer ) override;
+	void			setup(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer);
 	void			prepareToggleFullScreen();
 	void			finishToggleFullScreen();	
 #elif defined( CINDER_ANDROID )
@@ -223,7 +224,8 @@ protected:
 #elif defined( CINDER_UWP )
 	class RendererImplGlAngle	*mImpl;
 	friend class				RendererImplGlAngle;
-	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
+	Windows::UI::Core::CoreWindow^	mWnd;
+	Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace;
 #elif defined( CINDER_ANDROID )
 	class RendererGlAndroid  	*mImpl;
 	RendererGlAndroid         *getImpl() { return mImpl; }

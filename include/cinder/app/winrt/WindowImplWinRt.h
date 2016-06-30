@@ -55,7 +55,7 @@ class WindowImplWinRt {
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
 	void*		getNative() {throw (std::string(__FUNCTION__) + "Use getNativeCoreWindow()").c_str();};
 
-	::Platform::Agile<Windows::UI::Core::CoreWindow> getNativeCoreWindow() { return mWnd; }
+	Windows::UI::Core::CoreWindow^ getNativeCoreWindow() { return mWnd; }
 
 	void			enableMultiTouch();
 	bool			isBorderless() const { return mBorderless; }
@@ -100,7 +100,7 @@ class WindowImplWinRt {
 
 	AppWinRt*											mApp;
 	WindowRef											mWindowRef;
-	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
+	Windows::UI::Core::CoreWindow^						mWnd;
 
 	ivec2					mWindowOffset;
 	bool					mHidden;
