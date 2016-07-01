@@ -70,7 +70,7 @@ namespace cinder { namespace app {
 	completeCreation();
 }*/
 
-WindowImplWinRt::WindowImplWinRt( Windows::UI::Core::CoreWindow^ wnd, RendererRef renderer, AppWinRt *app )
+WindowImplWinRt::WindowImplWinRt(Windows::UI::Core::CoreWindow^ wnd, RendererRef renderer, AppWinRt *app )
 	: mWnd( wnd ), mRenderer( renderer ), mApp( app ), mIsDragging( false ), mTouchId( 0 ), mIsMultiTouchEnabled( false ),
 		mControlKeyPressed( false ), mAltKeyPressed( false ), mShiftKeyPressed( false )
 {
@@ -88,6 +88,26 @@ WindowImplWinRt::WindowImplWinRt( Windows::UI::Core::CoreWindow^ wnd, RendererRe
 
 	mWindowRef = Window::privateCreate__( this, mApp );
 }
+
+
+WindowImplWinRt::WindowImplWinRt(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef renderer, AppWinRt *app)
+	: mHolographicSpace(holographicSpace), mRenderer(renderer), mApp(app), mIsDragging(false), mTouchId(0), mIsMultiTouchEnabled(false),
+	mControlKeyPressed(false), mAltKeyPressed(false), mShiftKeyPressed(false)
+{
+	mTitle = "";
+
+	float width, height;
+	mWindowOffset = ivec2(0, 0);
+	mWindowWidth = static_cast<int>(width);
+	mWindowHeight = static_cast<int>(height);
+
+	mDisplay = Display::getMainDisplay();
+
+	mRenderer->setup(mHolographicSpace, nullptr);
+
+	mWindowRef = Window::privateCreate__(this, mApp);
+}
+
 
 void WindowImplWinRt::completeCreation()
 {
@@ -197,7 +217,10 @@ void WindowImplWinRt::setAlwaysOnTop( bool alwaysOnTop )
 void WindowImplWinRt::sizeChanged()
 {
 	float width, height;
-	GetPlatformWindowDimensions( mWnd.Get(), &width, &height );
+	if (mWnd != nullptr) 
+	{
+		GetPlatformWindowDimensions(mWnd.Get(), &width, &height);
+	}
 	mWindowWidth = (int)width;
 	mWindowHeight = (int)height;
 

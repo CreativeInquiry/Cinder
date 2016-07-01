@@ -31,10 +31,13 @@
 #include <wrl/client.h>
 #include <agile.h>
 
+using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::UI::Core;
+using namespace Windows::UI::Popups;
 using namespace Windows::UI::Input;
+using namespace Windows::System;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::Graphics::Display;
@@ -48,126 +51,146 @@ CinderFrameworkView::CinderFrameworkView()
 {
 }
 
-void CinderFrameworkView::Initialize( CoreApplicationView^ applicationView )
+void CinderFrameworkView::Initialize(CoreApplicationView^ applicationView)
 {
 	applicationView->Activated +=
-        ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>( this, &CinderFrameworkView::OnActivated );
+		ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &CinderFrameworkView::OnActivated);
 
 	CoreApplication::Suspending +=
-        ref new EventHandler<SuspendingEventArgs^>( this, &CinderFrameworkView::OnSuspending );
+		ref new EventHandler<SuspendingEventArgs^>(this, &CinderFrameworkView::OnSuspending);
 
 	CoreApplication::Resuming +=
-        ref new EventHandler<Platform::Object^>( this, &CinderFrameworkView::OnResuming );
+		ref new EventHandler<Platform::Object^>(this, &CinderFrameworkView::OnResuming);
 }
 
 void CinderFrameworkView::SetWindow(CoreWindow^ window)
 {
-	window->SizeChanged += 
-        ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>( this, &CinderFrameworkView::OnWindowSizeChanged );
+	window->SizeChanged +=
+		ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &CinderFrameworkView::OnWindowSizeChanged);
 
 	window->VisibilityChanged +=
-		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>( this, &CinderFrameworkView::OnVisibilityChanged );
+		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &CinderFrameworkView::OnVisibilityChanged);
 
-	window->Closed += 
-        ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>( this, &CinderFrameworkView::OnWindowClosed );
+	window->Closed +=
+		ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &CinderFrameworkView::OnWindowClosed);
 
 	window->PointerCursor = ref new CoreCursor(CoreCursorType::Arrow, 0);
 
 	window->PointerReleased +=
-		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>( this, &CinderFrameworkView::OnPointerReleased );
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &CinderFrameworkView::OnPointerReleased);
 
 	window->PointerPressed +=
-		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>( this, &CinderFrameworkView::OnPointerPressed );
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &CinderFrameworkView::OnPointerPressed);
 
 	window->PointerMoved +=
-		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>( this, &CinderFrameworkView::OnPointerMoved );
-	
-	window->KeyDown +=
-        ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>( this, &CinderFrameworkView::OnKeyDown );
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &CinderFrameworkView::OnPointerMoved);
 
-    window->KeyUp +=
-        ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>( this, &CinderFrameworkView::OnKeyUp );
+	window->KeyDown +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &CinderFrameworkView::OnKeyDown);
+
+	window->KeyUp +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &CinderFrameworkView::OnKeyUp);
 
 #if 0
-	window->CharacterReceived += 
+	window->CharacterReceived +=
 		ref new TypedEventHandler<CoreWindow^, CharacterReceivedEventArgs^>(this, &CinderFrameworkView::OnCharacterReceived);
 #endif 
+
+	try
+	{
+		// Create a holographic space for the core window for the current view.
+		mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
+
+		// Get the default SpatialLocator.
+		SpatialLocator^ mLocator = SpatialLocator::GetDefault();
+
+		// Create a stationary frame of reference.
+		mStationaryReferenceFrame = mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation();
+		holoLensSupport = true;
+	}
+	catch (Platform::Exception^ ex)
+	{
+		if (ex->HResult == HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED))
+		{
+			holoLensSupport = false;
+		}
+	}
 }
-// Initializes scene resources
+
 void CinderFrameworkView::Load(Platform::String^ entryPoint)
-{
-	
-}
-
-
-
-// Application lifecycle event handler.
-void CinderFrameworkView::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
-{
-	// Run() won't start until the CoreWindow is activated.
-	CoreWindow::GetForCurrentThread()->Activate();
-}
-
-
-
-
-
-void CinderFrameworkView::Load( Platform::String^ entryPoint )
 {
 }
 
 void CinderFrameworkView::Run()
 {
-	mApp = cinder::CinderFrameworkView::AppWinRt::create();
-	mApp->run( CoreWindow::GetForCurrentThread() );
+	if (holoLensSupport) 
+	{
+		RunHoloLens();
+	}
+	else 
+	{
+		RunUWP();
+	}
+}
+
+void CinderFrameworkView::RunHoloLens()
+{
+	mApp = cinder::app::AppWinRt::create();
+	mApp->run(mHolographicSpace);
+}
+
+void CinderFrameworkView::RunUWP()
+{
+	mApp = cinder::app::AppWinRt::create();
+	mApp->run(CoreWindow::GetForCurrentThread());
 }
 
 void CinderFrameworkView::Uninitialize()
 {
 }
 
-void CinderFrameworkView::OnCharacterReceived( CoreWindow^ sender, CharacterReceivedEventArgs^ args )
+void CinderFrameworkView::OnCharacterReceived(CoreWindow^ sender, CharacterReceivedEventArgs^ args)
 {
 	unsigned int code = args->KeyCode;
 }
 
-void CinderFrameworkView::OnKeyDown( CoreWindow^ sender, KeyEventArgs^ args )
+void CinderFrameworkView::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ args)
 {
-	mApp->handleKeyDown( sender, args );
+	mApp->handleKeyDown(sender, args);
 }
 
-void CinderFrameworkView::OnKeyUp( CoreWindow^ sender, KeyEventArgs^ args )
+void CinderFrameworkView::OnKeyUp(CoreWindow^ sender, KeyEventArgs^ args)
 {
-	mApp->handleKeyUp( sender, args );
+	mApp->handleKeyUp(sender, args);
 }
 
-void CinderFrameworkView::OnWindowSizeChanged( CoreWindow^ sender, WindowSizeChangedEventArgs^ args )
+void CinderFrameworkView::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
 {
-	mApp->windowSizeChange( sender );
+	mApp->windowSizeChange(sender);
 }
 
-void CinderFrameworkView::OnVisibilityChanged( CoreWindow^ sender, VisibilityChangedEventArgs^ args )
+void CinderFrameworkView::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
 {
-	mApp->setVisible( args->Visible );
+	mApp->setVisible(args->Visible);
 }
 
-void CinderFrameworkView::OnWindowClosed( CoreWindow^ sender, CoreWindowEventArgs^ args )
+void CinderFrameworkView::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
 {
 }
 
-void CinderFrameworkView::OnPointerPressed( CoreWindow^ sender, PointerEventArgs^ args )
+void CinderFrameworkView::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 {
-	mApp->handlePointerDown( sender, args );
+	mApp->handlePointerDown(sender, args);
 }
 
 void CinderFrameworkView::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 {
-	mApp->handlePointerUp( sender, args );
+	mApp->handlePointerUp(sender, args);
 }
 
 void CinderFrameworkView::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
 {
-	mApp->handlePointerMoved( sender, args );
+	mApp->handlePointerMoved(sender, args);
 }
 
 void CinderFrameworkView::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
@@ -183,7 +206,7 @@ void CinderFrameworkView::OnSuspending(Platform::Object^ sender, SuspendingEvent
 	// the app will be forced to exit.
 	//SuspendingDeferral^ deferral = args->SuspendingOperation->GetDeferral();
 }
- 
+
 void CinderFrameworkView::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 {
 	// Restore any data or state that was unloaded on suspend. By default, data
@@ -193,5 +216,5 @@ void CinderFrameworkView::OnResuming(Platform::Object^ sender, Platform::Object^
 
 Windows::ApplicationModel::Core::IFrameworkView^ CinderFrameworkViewSource::CreateView()
 {
-    return ref new CinderFrameworkView();
+	return ref new CinderFrameworkView();
 }

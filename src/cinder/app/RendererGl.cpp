@@ -291,7 +291,7 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup(Windows::UI::Core::CoreWindow^ wnd, RendererRef sharedRenderer )
+void RendererGl::setup(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
 	if( ! mImpl )
