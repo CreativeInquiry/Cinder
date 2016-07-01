@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2015, The Cinder Project, All rights reserved.
- 
- Portions Copyright (c) 2013, Microsoft Open Technologies, Inc. 
+
+ Portions Copyright (c) 2013, Microsoft Open Technologies, Inc.
  All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
@@ -30,99 +30,105 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
 
-namespace cinder { namespace app {
+namespace cinder {
+	namespace app {
 
-class AppWinRt;
+		class AppWinRt;
 
-class WindowImplWinRt {
-  public:
-	WindowImplWinRt( Windows::UI::Core::CoreWindow^ wnd, RendererRef renderer, AppWinRt *app );
+		class WindowImplWinRt {
+		public:
+			WindowImplWinRt(Windows::UI::Core::CoreWindow^ wnd, RendererRef renderer, AppWinRt *app);
+			WindowImplWinRt(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef renderer, AppWinRt *app);
 
-	bool		isFullScreen() { return mFullScreen; }
-	void		setFullScreen( bool fullScreen, const FullScreenOptions &options );
-	ivec2		getSize() const { return ivec2( mWindowWidth, mWindowHeight ); }
-	void		setSize( const ivec2 &size );
-	ivec2		getPos() const { return mWindowOffset; }
-	void		setPos( const ivec2 &pos );
-	void		close();
-	std::string	getTitle() const;
-	void		setTitle( const std::string &title );
-	void		hide();
-	void		show();
-	bool		isHidden() const;
-	DisplayRef	getDisplay() const { return mDisplay; }
-	RendererRef	getRenderer() const { return mRenderer; }
-	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
-	void*		getNative() {throw (std::string(__FUNCTION__) + "Use getNativeCoreWindow()").c_str();};
+			bool		isFullScreen() { return mFullScreen; }
+			void		setFullScreen(bool fullScreen, const FullScreenOptions &options);
+			ivec2		getSize() const { return ivec2(mWindowWidth, mWindowHeight); }
+			void		setSize(const ivec2 &size);
+			ivec2		getPos() const { return mWindowOffset; }
+			void		setPos(const ivec2 &pos);
+			void		close();
+			std::string	getTitle() const;
+			void		setTitle(const std::string &title);
+			void		hide();
+			void		show();
+			bool		isHidden() const;
+			DisplayRef	getDisplay() const { return mDisplay; }
+			RendererRef	getRenderer() const { return mRenderer; }
+			const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
+			void*		getNative() { throw (std::string(__FUNCTION__) + "Use getNativeCoreWindow()").c_str(); };
 
-	Windows::UI::Core::CoreWindow^ getNativeCoreWindow() { return mWnd; }
+			::Platform::Agile<Windows::UI::Core::CoreWindow> getNativeCoreWindow() { return mWnd; }
+			Windows::Graphics::Holographic::HolographicSpace^	getHolographicSpace() { return mHolographicSpace; }
+			void			enableMultiTouch();
+			bool			isBorderless() const { return mBorderless; }
+			void			setBorderless(bool borderless);
+			bool			isAlwaysOnTop() const { return mAlwaysOnTop; }
+			void			setAlwaysOnTop(bool alwaysOnTop);
 
-	void			enableMultiTouch();
-	bool			isBorderless() const { return mBorderless; }
-	void			setBorderless( bool borderless );
-	bool			isAlwaysOnTop() const { return mAlwaysOnTop; }
-	void			setAlwaysOnTop( bool alwaysOnTop );
+			WindowRef				getWindow() { return mWindowRef; }
+			virtual void			keyDown(const KeyEvent &event);
+			virtual void			draw();
+			virtual void			redraw();
+			virtual void			resize();
 
-	WindowRef				getWindow() { return mWindowRef; }
-	virtual void			keyDown( const KeyEvent &event );
-	virtual void			draw();
-	virtual void			redraw();
-	virtual void			resize();
+			void			privateClose();
+		protected:
+			void			createWindow(const ivec2 &windowSize, const std::string &title);
+			void			completeCreation();
+			static void		registerWindowClass();
+			void			getScreenSize(int clientWidth, int clientHeight, int *resultWidth, int *resultHeight);
+			//void			onTouch( DX_WINDOW_TYPE DX_WINDOW_TYPE, WPARAM wParam, LPARAM lParam );
+			void			toggleFullScreen();
 
-	void			privateClose();
-  protected:
-	void			createWindow( const ivec2 &windowSize, const std::string &title );
-	void			completeCreation();
-	static void		registerWindowClass();
-	void			getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight );
-	//void			onTouch( DX_WINDOW_TYPE DX_WINDOW_TYPE, WPARAM wParam, LPARAM lParam );
-	void			toggleFullScreen();
+			void	sizeChanged();
 
-	void	sizeChanged();
+			// mouse & touch
+			void	handlePointerDown(Windows::UI::Core::PointerEventArgs^ args);
+			void	handlePointerMoved(Windows::UI::Core::PointerEventArgs^ args);
+			void	handlePointerUp(Windows::UI::Core::PointerEventArgs^ args);
 
-	// mouse & touch
-	void	handlePointerDown( Windows::UI::Core::PointerEventArgs^ args );
-	void	handlePointerMoved( Windows::UI::Core::PointerEventArgs^ args );
-	void	handlePointerUp( Windows::UI::Core::PointerEventArgs^ args );
+			void	handleTouchDown(Windows::UI::Core::PointerEventArgs^ args);
+			void	handleMouseDown(Windows::UI::Core::PointerEventArgs^ args);
+			void	handleTouchMoved(Windows::UI::Core::PointerEventArgs^ args);
+			void	handleMouseMoved(Windows::UI::Core::PointerEventArgs^ args);
+			void	handleTouchUp(Windows::UI::Core::PointerEventArgs^ args);
+			void	handleMouseUp(Windows::UI::Core::PointerEventArgs^ args);
+			void	updateActiveTouches();
 
-	void	handleTouchDown( Windows::UI::Core::PointerEventArgs^ args );
-	void	handleMouseDown( Windows::UI::Core::PointerEventArgs^ args );
-	void	handleTouchMoved( Windows::UI::Core::PointerEventArgs^ args );
-	void	handleMouseMoved( Windows::UI::Core::PointerEventArgs^ args );
-	void	handleTouchUp( Windows::UI::Core::PointerEventArgs^ args );
-	void	handleMouseUp( Windows::UI::Core::PointerEventArgs^ args );
-	void	updateActiveTouches();
+			// keyboard
+			unsigned int	prepKeyEventModifiers() const;
+			void			handleKeyDown(Windows::UI::Core::KeyEventArgs^ args);
+			void			handleKeyUp(Windows::UI::Core::KeyEventArgs^ args);
 
-	// keyboard
-	unsigned int	prepKeyEventModifiers() const;
-	void			handleKeyDown( Windows::UI::Core::KeyEventArgs^ args );
-	void			handleKeyUp( Windows::UI::Core::KeyEventArgs^ args );
+			AppWinRt*											mApp;
+			WindowRef											mWindowRef;
+			::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
+			Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace = nullptr;
+			// The world coordinate system. In this example, a reference frame placed in the environment.
+			Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ mStationaryReferenceFrame = nullptr;
 
-	AppWinRt*											mApp;
-	WindowRef											mWindowRef;
-	Windows::UI::Core::CoreWindow^						mWnd;
+			ivec2					mWindowOffset;
+			bool					mHidden;
+			int						mWindowWidth, mWindowHeight;
+			bool					mFullScreen, mBorderless, mAlwaysOnTop, mResizable;
+			ivec2					mWindowedPos, mWindowedSize;
+			std::string				mTitle;
+			DisplayRef				mDisplay;
+			RendererRef				mRenderer;
+			bool					mIsDragging;
 
-	ivec2					mWindowOffset;
-	bool					mHidden;
-	int						mWindowWidth, mWindowHeight;
-	bool					mFullScreen, mBorderless, mAlwaysOnTop, mResizable;
-	ivec2					mWindowedPos, mWindowedSize;
-	std::string				mTitle;
-	DisplayRef				mDisplay;
-	RendererRef				mRenderer;
-	bool					mIsDragging;
+			// multiTouch
+			bool							mIsMultiTouchEnabled;
+			std::map<DWORD, vec2>			mMultiTouchPrev;
+			std::map<DWORD, DWORD>			mTouchIds;
+			std::vector<TouchEvent::Touch>	mActiveTouches;
+			DWORD							mTouchId;
 
-	// multiTouch
-	bool							mIsMultiTouchEnabled;
-	std::map<DWORD,vec2>			mMultiTouchPrev;
-	std::map<DWORD,DWORD>			mTouchIds;
-	std::vector<TouchEvent::Touch>	mActiveTouches;
-	DWORD							mTouchId;
+			// keyboard
+			bool		mControlKeyPressed, mShiftKeyPressed, mAltKeyPressed;
 
-	// keyboard
-	bool		mControlKeyPressed, mShiftKeyPressed, mAltKeyPressed;
+			friend AppWinRt;
+		};
 
-	friend AppWinRt;
-};
-
-} } // namespace cinder::app
+	}
+} // namespace cinder::app

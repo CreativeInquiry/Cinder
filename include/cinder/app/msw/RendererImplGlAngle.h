@@ -56,7 +56,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 #elif defined( CINDER_UWP )
 	//bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
 	bool	initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer) override;
-	bool	initialize(Windows::UI::Core::CoreWindow^ wnd, RendererRef sharedRenderer) override;
+	bool	initialize(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer) override;
 	bool	initializeInner(::Platform::Object^ windowBasis, RendererRef sharedRenderer);
 	void	CleanupEGL();
 #endif

@@ -31,40 +31,48 @@
 #include "cinder/app/winrt/AppWinRt.h"
 
 ref class CinderFrameworkView sealed : public Windows::ApplicationModel::Core::IFrameworkView {
-  public:
+public:
 	CinderFrameworkView();
-	
+
 	// IFrameworkView Methods
-	virtual void Initialize( Windows::ApplicationModel::Core::CoreApplicationView^ applicationView );
-	virtual void SetWindow( Windows::UI::Core::CoreWindow^ window );
-	virtual void Load( Platform::String^ entryPoint );
+	virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView);
+	virtual void SetWindow(Windows::UI::Core::CoreWindow^ window);
+	virtual void Load(Platform::String^ entryPoint);
 	virtual void Run();
 	virtual void Uninitialize();
 
 	void EnableMultiTouch(BOOL bEnable);
+	void RunUWP();
+	void RunHoloLens();
 
-  protected:
+protected:
 	// Event Handlers.
-	void OnWindowSizeChanged( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args );
-	void OnLogicalDpiChanged( Platform::Object^ sender );
-	void OnActivated( Windows::ApplicationModel::Core::CoreApplicationView^ applicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args );
-	void OnSuspending( Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args );
-	void OnResuming( Platform::Object^ sender, Platform::Object^ args );
-	void OnWindowClosed( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CoreWindowEventArgs^ args );
-	void OnVisibilityChanged( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args );
-	void OnPointerPressed( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args );
-	void OnPointerReleased( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args );
-	void OnPointerMoved( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args );
-	void OnKeyDown( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args );
-	void OnKeyUp( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args );
-	void OnCharacterReceived( Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CharacterReceivedEventArgs^ args );
+	void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args);
+	void OnLogicalDpiChanged(Platform::Object^ sender);
+	void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args);
+	void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
+	void OnResuming(Platform::Object^ sender, Platform::Object^ args);
+	void OnWindowClosed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CoreWindowEventArgs^ args);
+	void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args);
+	void OnPointerPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+	void OnPointerReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+	void OnPointerMoved(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+	void OnKeyDown(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
+	void OnKeyUp(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
+	void OnCharacterReceived(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CharacterReceivedEventArgs^ args);
 
-  private:
-
+private:
+	bool holoLensSupport;
 	cinder::app::AppWinRt*	mApp;
+
+	// The holographic space the app will use for rendering.
+	Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace = nullptr;
+
+	// The world coordinate system. In this example, a reference frame placed in the environment.
+	Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ mStationaryReferenceFrame = nullptr;
 };
 
 ref class CinderFrameworkViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource {
-  public:
+public:
 	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView();
 };
