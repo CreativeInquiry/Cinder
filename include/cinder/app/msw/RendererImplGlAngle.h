@@ -55,9 +55,8 @@ class RendererImplGlAngle : public RendererImplMsw {
 	bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 #elif defined( CINDER_UWP )
 	//bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
-	bool	initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer) override;
+	bool	initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef sharedRenderer) override;
 	bool	initialize(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer) override;
-	bool	initializeInner(::Platform::Object^ windowBasis, RendererRef sharedRenderer);
 	void	CleanupEGL();
 #endif
 	void	prepareToggleFullScreen() override;
@@ -75,13 +74,11 @@ class RendererImplGlAngle : public RendererImplMsw {
 	
 	class RendererGl	*mRenderer;
 	gl::ContextRef		mCinderContext;
-
+	RendererRef		msharedRef;
 	EGLContext		mContext;
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
 	Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace = nullptr;
-
-	// The world coordinate system. In this example, a reference frame placed in the environment.
 	Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ mStationaryReferenceFrame = nullptr;
 #if defined( CINDER_MSW_DESKTOP )
 	HDC				mDc;

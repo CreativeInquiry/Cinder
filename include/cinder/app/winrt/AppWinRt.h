@@ -85,7 +85,7 @@ namespace cinder {
 			void			launch() override {}
 			// Responsible for the primary runloop
 			void			run(Windows::UI::Core::CoreWindow^ window);
-			void			run(Windows::Graphics::Holographic::HolographicSpace^ holographicspace);
+			void			run(Windows::Graphics::Holographic::HolographicSpace^ holographicspace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR);
 
 			void				setWindow(const WindowRef& window);
 			WindowImplWinRt*	findWindowForCoreWindow(Windows::UI::Core::CoreWindow^ coreWindow);

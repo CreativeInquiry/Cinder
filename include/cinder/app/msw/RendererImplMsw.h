@@ -42,7 +42,7 @@ class RendererImplMsw {
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_UWP )
 	virtual bool	initialize(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
-	virtual bool	initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer) = 0;
+	virtual bool	initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef sharedRenderer) = 0;
 #endif
 	virtual void	prepareToggleFullScreen() {}
 	virtual void	finishToggleFullScreen() {}

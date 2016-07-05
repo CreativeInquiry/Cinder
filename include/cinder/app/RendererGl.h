@@ -181,7 +181,7 @@ class RendererGl : public Renderer {
 	virtual void	finishToggleFullScreen();
 #elif defined( CINDER_UWP )
 	void			setup(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
-	void			setup(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef sharedRenderer);
+	void			setup(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef sharedRenderer);
 	void			prepareToggleFullScreen();
 	void			finishToggleFullScreen();	
 #elif defined( CINDER_ANDROID )

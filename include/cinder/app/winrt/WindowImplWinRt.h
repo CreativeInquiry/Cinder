@@ -38,7 +38,7 @@ namespace cinder {
 		class WindowImplWinRt {
 		public:
 			WindowImplWinRt(Windows::UI::Core::CoreWindow^ wnd, RendererRef renderer, AppWinRt *app);
-			WindowImplWinRt(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef renderer, AppWinRt *app);
+			WindowImplWinRt(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef renderer, AppWinRt *app);
 
 			bool		isFullScreen() { return mFullScreen; }
 			void		setFullScreen(bool fullScreen, const FullScreenOptions &options);
