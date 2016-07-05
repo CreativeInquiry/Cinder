@@ -82,16 +82,16 @@ namespace cinder {
 			return nullptr;
 		}
 
-		void AppWinRt::run(Windows::Graphics::Holographic::HolographicSpace^ holographicspace)
+		void AppWinRt::run(Windows::Graphics::Holographic::HolographicSpace^ holographicspace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR)
 		{
-			mWindows.push_back(make_shared<WindowImplWinRt>(holographicspace, make_shared<RendererGl>(), this));
+			mWindows.push_back(make_shared<WindowImplWinRt>(holographicspace, frameOR, make_shared<RendererGl>(), this));
 
 			mVisible = true;
 
 			mActiveWindow = mWindows.back()->getWindow();
 			privateSetup__();
 
-			mActiveWindow->emitResize();
+			//mActiveWindow->emitResize();
 
 			if (AppBase::sSettingsFromMain->isMultiTouchEnabled())
 				mWindows.back()->enableMultiTouch();

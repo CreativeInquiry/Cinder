@@ -136,7 +136,7 @@ void CinderFrameworkView::Run()
 void CinderFrameworkView::RunHoloLens()
 {
 	mApp = cinder::app::AppWinRt::create();
-	mApp->run(mHolographicSpace);
+	mApp->run(mHolographicSpace, mStationaryReferenceFrame);
 }
 
 void CinderFrameworkView::RunUWP()

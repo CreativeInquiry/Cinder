@@ -90,20 +90,22 @@ WindowImplWinRt::WindowImplWinRt(Windows::UI::Core::CoreWindow^ wnd, RendererRef
 }
 
 
-WindowImplWinRt::WindowImplWinRt(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, RendererRef renderer, AppWinRt *app)
-	: mHolographicSpace(holographicSpace), mRenderer(renderer), mApp(app), mIsDragging(false), mTouchId(0), mIsMultiTouchEnabled(false),
+WindowImplWinRt::WindowImplWinRt(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef renderer, AppWinRt *app)
+	: mHolographicSpace(holographicSpace), mStationaryReferenceFrame(frameOR), mRenderer(renderer), mApp(app), mIsDragging(false), mTouchId(0), mIsMultiTouchEnabled(false),
 	mControlKeyPressed(false), mAltKeyPressed(false), mShiftKeyPressed(false)
 {
 	mTitle = "";
 
-	float width, height;
+	float width = 10.0;
+	float height = 10.0;
+	
 	mWindowOffset = ivec2(0, 0);
 	mWindowWidth = static_cast<int>(width);
 	mWindowHeight = static_cast<int>(height);
 
 	mDisplay = Display::getMainDisplay();
 
-	mRenderer->setup(mHolographicSpace, nullptr);
+	mRenderer->setup(mHolographicSpace, mStationaryReferenceFrame, nullptr);
 
 	mWindowRef = Window::privateCreate__(this, mApp);
 }
@@ -216,7 +218,8 @@ void WindowImplWinRt::setAlwaysOnTop( bool alwaysOnTop )
 
 void WindowImplWinRt::sizeChanged()
 {
-	float width, height;
+	float width = 10.0;
+	float height = 10.0;
 	if (mWnd != nullptr) 
 	{
 		GetPlatformWindowDimensions(mWnd.Get(), &width, &height);

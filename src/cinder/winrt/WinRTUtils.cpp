@@ -63,7 +63,7 @@ void WinRTMessageBox(Platform::String^ message, Platform::String^ buttonText)
 	dlg->ShowAsync();
 }
 
-void GetPlatformWindowDimensions(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, float* width, float* height) {
+void GetPlatformWindowDimensions(Windows::UI::Core::CoreWindow^ wnd, float* width, float* height) {
 
 	Windows::Foundation::Rect windowBounds  = wnd->Bounds;
 
