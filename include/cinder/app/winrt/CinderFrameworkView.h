@@ -74,5 +74,8 @@ private:
 
 ref class CinderFrameworkViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource {
 public:
-	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView();
+	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView()
+	{
+		return ref new CinderFrameworkView();
+	}
 };
