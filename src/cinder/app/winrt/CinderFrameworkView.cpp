@@ -213,8 +213,3 @@ void CinderFrameworkView::OnResuming(Platform::Object^ sender, Platform::Object^
 	// and state are persisted when resuming from suspend. Note that this event
 	// does not occur if the app was previously terminated.
 }
-
-Windows::ApplicationModel::Core::IFrameworkView^ CinderFrameworkViewSource::CreateView()
-{
-	return ref new CinderFrameworkView();
-}

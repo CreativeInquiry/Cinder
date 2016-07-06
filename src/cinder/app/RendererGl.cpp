@@ -305,7 +305,7 @@ void RendererGl::setup(Windows::Graphics::Holographic::HolographicSpace^ hologra
 	if (!mImpl)
 		mImpl = new RendererImplGlAngle(this);
 	if (!mImpl->initialize(holographicSpace, frameOR, sharedRenderer))
-		throw ExcRendererAllocation("RendererImplGlMsw initialization failed.");
+		throw ExcRendererAllocation("RendererImplGlAngle initialization failed.");
 }
 
 void RendererGl::prepareToggleFullScreen()
@@ -320,8 +320,8 @@ void RendererGl::finishToggleFullScreen()
 
 void RendererGl::startDraw()
 {
-	if( mStartDrawFn )
-		mStartDrawFn( this );
+	if (mStartDrawFn)
+		mStartDrawFn(this);
 	else
 		mImpl->makeCurrentContext( false );
 }

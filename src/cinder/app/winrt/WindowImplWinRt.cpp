@@ -96,8 +96,8 @@ WindowImplWinRt::WindowImplWinRt(Windows::Graphics::Holographic::HolographicSpac
 {
 	mTitle = "";
 
-	float width = 10.0;
-	float height = 10.0;
+	float width = 0.0;
+	float height = 0.0;
 	
 	mWindowOffset = ivec2(0, 0);
 	mWindowWidth = static_cast<int>(width);
