@@ -55,7 +55,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 	bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 #elif defined( CINDER_UWP )
 	//bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
-	bool	initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef sharedRenderer) override;
+	bool	initialize(::Platform::Agile<Windows::Graphics::Holographic::HolographicSpace> holographicSpace, ::Platform::Agile<Windows::Perception::Spatial::SpatialStationaryFrameOfReference> frameOR, RendererRef sharedRenderer) override;
 	bool	initialize(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer) override;
 	void	CleanupEGL();
 #endif
@@ -78,8 +78,6 @@ class RendererImplGlAngle : public RendererImplMsw {
 	EGLContext		mContext;
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
-	Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace = nullptr;
-	Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ mStationaryReferenceFrame = nullptr;
 #if defined( CINDER_MSW_DESKTOP )
 	HDC				mDc;
 #endif

@@ -58,7 +58,7 @@ namespace cinder {
 			void*		getNative() { throw (std::string(__FUNCTION__) + "Use getNativeCoreWindow()").c_str(); };
 
 			::Platform::Agile<Windows::UI::Core::CoreWindow> getNativeCoreWindow() { return mWnd; }
-			Windows::Graphics::Holographic::HolographicSpace^	getHolographicSpace() { return mHolographicSpace; }
+			::Platform::Agile<Windows::Graphics::Holographic::HolographicSpace>	getHolographicSpace() { return mHolographicSpace; }
 			void			enableMultiTouch();
 			bool			isBorderless() const { return mBorderless; }
 			void			setBorderless(bool borderless);
@@ -103,9 +103,9 @@ namespace cinder {
 			AppWinRt*											mApp;
 			WindowRef											mWindowRef;
 			::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
-			Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace = nullptr;
+			::Platform::Agile<Windows::Graphics::Holographic::HolographicSpace> mHolographicSpace = nullptr;
 			// The world coordinate system. In this example, a reference frame placed in the environment.
-			Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ mStationaryReferenceFrame = nullptr;
+			::Platform::Agile<Windows::Perception::Spatial::SpatialStationaryFrameOfReference> mStationaryReferenceFrame = nullptr;
 
 			ivec2					mWindowOffset;
 			bool					mHidden;
