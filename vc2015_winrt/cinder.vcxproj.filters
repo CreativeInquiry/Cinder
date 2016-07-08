@@ -104,6 +104,9 @@
     <Filter Include="Source Files\msw">
       <UniqueIdentifier>{cb0780f7-8bea-4fcd-8542-84a957a3bdd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\app\msw">
+      <UniqueIdentifier>{5a1e58a2-ec24-4114-ae68-d20762baec08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\Arcball.h">
@@ -666,6 +669,12 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\winrt\WinRTUtils.h">
       <Filter>Header Files\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\PlatformMsw.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlAngle.h">
+      <Filter>Header Files\app\msw</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
