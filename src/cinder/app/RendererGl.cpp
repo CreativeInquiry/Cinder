@@ -299,7 +299,7 @@ void RendererGl::setup(::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, Ren
 	if( ! mImpl->initialize( wnd, sharedRenderer ) )
 		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
 }
-void RendererGl::setup(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef sharedRenderer)
+void RendererGl::setup(::Platform::Agile<Windows::Graphics::Holographic::HolographicSpace> holographicSpace, ::Platform::Agile<Windows::Perception::Spatial::SpatialStationaryFrameOfReference> frameOR, RendererRef sharedRenderer)
 {
 	mHolographicSpace = holographicSpace;
 	if (!mImpl)

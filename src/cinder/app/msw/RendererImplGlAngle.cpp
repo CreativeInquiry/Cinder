@@ -95,10 +95,10 @@ namespace cinder {
 		}
 
 
-		bool RendererImplGlAngle::initialize(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace, Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOR, RendererRef sharedRenderer)
+		bool RendererImplGlAngle::initialize(::Platform::Agile<Windows::Graphics::Holographic::HolographicSpace> holographicSpace, ::Platform::Agile<Windows::Perception::Spatial::SpatialStationaryFrameOfReference> frameOR, RendererRef sharedRenderer)
 		{
 			mHolographicSpace = holographicSpace;
-			mStationaryReferenceFrame = frameOR;
+			mSpatialStationaryFrameOfReference = frameOR;
 #if defined( CINDER_MSW_DESKTOP )
 			mDc = dc;
 #endif
@@ -116,7 +116,7 @@ namespace cinder {
 
 			const EGLint contextAttibutes[] = {
 #if defined( CINDER_GL_ES_3 )
-				EGL_CONTEXT_CLIENT_VERSION, 3,
+				EGL_CONTEXT_CLIENT_VERSION, 2,
 #else
 				EGL_CONTEXT_CLIENT_VERSION, 2,
 #endif
@@ -234,10 +234,10 @@ namespace cinder {
 			// Create a PropertySet and initialize with the EGLNativeWindowType.
 			PropertySet^ surfaceCreationProperties = ref new PropertySet();
 			//surfaceCreationProperties->Insert(ref new String(EGLNativeWindowTypeProperty), window);
-			surfaceCreationProperties->Insert(ref new String(EGLNativeWindowTypeProperty), mHolographicSpace);
-			if (mStationaryReferenceFrame != nullptr)
+			surfaceCreationProperties->Insert(ref new String(EGLNativeWindowTypeProperty), mHolographicSpace.Get());
+			if (mSpatialStationaryFrameOfReference != nullptr)
 			{
-				surfaceCreationProperties->Insert(ref new String(EGLBaseCoordinateSystemProperty), mStationaryReferenceFrame);
+				surfaceCreationProperties->Insert(ref new String(EGLBaseCoordinateSystemProperty), mSpatialStationaryFrameOfReference.Get());
 			}
 
 			// You can configure the surface to render at a lower resolution and be scaled up to
@@ -267,6 +267,11 @@ namespace cinder {
 				return false;
 			checkGlStatus();
 
+			eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
+			if (eglGetError() != EGL_SUCCESS)
+				return false;
+			checkGlStatus();
+
 			gl::Environment::setEs();
 			checkGlStatus();
 
@@ -279,15 +284,8 @@ namespace cinder {
 			mCinderContext->makeCurrent();
 			checkGlStatus();
 
-			eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
-			if (eglGetError() != EGL_SUCCESS)
-				return false;
+			eglSwapInterval(mDisplay, 0);
 			checkGlStatus();
-
-
-
-			//eglSwapInterval(mDisplay, 0);
-			//checkGlStatus();
 
 			return true;
 		}
