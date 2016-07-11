@@ -44,7 +44,8 @@
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
 	#else
 		#include "GLES3/gl3.h"
-		#include "GLES3/gl3ext.h"
+		#include "GLES3/gl31.h"
+		#include "GLES3/gl32.h"
 		#include "GLES2/gl2ext.h"
 		#define CINDER_GL_ES_3
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
