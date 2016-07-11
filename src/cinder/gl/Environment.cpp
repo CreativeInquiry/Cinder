@@ -35,6 +35,10 @@
 	#import <OpenGLES/EAGL.h>
 #elif defined( CINDER_GL_ANGLE )
 	#include "EGL/egl.h"
+	#include "EGL/egl.h"
+	#include "EGL/eglext.h"
+	#include "EGL/eglplatform.h"
+	#include "angle_windowsstore.h"
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 #elif defined( CINDER_ANDROID )
@@ -142,7 +146,8 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	EGLDisplay prevEglDisplay = ::eglGetCurrentDisplay();
 	EGLSurface prevEglSurface = ::eglGetCurrentSurface( EGL_DRAW );
 
-	EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
+	EGLint surfaceAttribList[] = { EGL_ANGLE_SURFACE_RENDER_TO_BACK_BUFFER, EGL_TRUE,
+		EGL_NONE };
 	EGLContext eglContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
 
 	shared_ptr<Context::PlatformData> platformData( new PlatformDataAngle( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );

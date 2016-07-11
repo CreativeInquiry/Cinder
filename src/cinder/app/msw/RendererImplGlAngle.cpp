@@ -103,27 +103,22 @@ namespace cinder {
 			mDc = dc;
 #endif
 
-			const EGLint configAttributes[] =
-			{
-				EGL_RED_SIZE, 8,
-				EGL_GREEN_SIZE, 8,
-				EGL_BLUE_SIZE, 8,
-				EGL_ALPHA_SIZE, 8,
-				EGL_DEPTH_SIZE, 8,
-				EGL_STENCIL_SIZE, 8,
-				EGL_NONE
-			};
+			if (sharedRenderer)
+				CI_LOG_E("ANGLE does not currenty supported shared renderers.");
 
-			const EGLint contextAttibutes[] = {
-#if defined( CINDER_GL_ES_3 )
-				EGL_CONTEXT_CLIENT_VERSION, 2,
-#else
-				EGL_CONTEXT_CLIENT_VERSION, 2,
-#endif
-				EGL_NONE
-			};
+			std::vector<EGLint> configAttribs;
+			configAttribs.push_back(EGL_RED_SIZE); configAttribs.push_back(8);
+			configAttribs.push_back(EGL_GREEN_SIZE); configAttribs.push_back(8);
+			configAttribs.push_back(EGL_BLUE_SIZE); configAttribs.push_back(8);
+			configAttribs.push_back(EGL_ALPHA_SIZE); configAttribs.push_back(8);
+			configAttribs.push_back(EGL_DEPTH_SIZE); configAttribs.push_back(8);
+			configAttribs.push_back(EGL_STENCIL_SIZE); configAttribs.push_back(8);
+			// multisampling doesn't currently appear to work
+			//	configAttribs.push_back( EGL_SAMPLE_BUFFERS ); configAttribs.push_back( 1 );
+			configAttribs.push_back(EGL_NONE);
 
-			const EGLint surfaceAttributes[] =
+
+			const EGLint surfaceAttribList[] =
 			{
 				// EGL_ANGLE_SURFACE_RENDER_TO_BACK_BUFFER is part of the same optimization as EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER (see above).
 				// If you have compilation issues with it then please update your Visual Studio templates.
@@ -131,22 +126,7 @@ namespace cinder {
 				EGL_NONE
 		};
 
-			const EGLint defaultDisplayAttributes[] =
-			{
-				// These are the default display attributes, used to request ANGLE's D3D11 renderer.
-				// eglInitialize will only succeed with these attributes if the hardware supports D3D11 Feature Level 10_0+.
-				EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
 
-				// EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER is an optimization that can have large performance benefits on mobile devices.
-				// Its syntax is subject to change, though. Please update your Visual Studio templates if you experience compilation issues with it.
-				EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER, EGL_TRUE,
-
-				// EGL_PLATFORM_ANGLE_ENABLE_AUTOMATIC_TRIM_ANGLE is an option that enables ANGLE to automatically call 
-				// the IDXGIDevice3::Trim method on behalf of the application when it gets suspended. 
-				// Calling IDXGIDevice3::Trim when an application is suspended is a Windows Store application certification requirement.
-				EGL_PLATFORM_ANGLE_ENABLE_AUTOMATIC_TRIM_ANGLE, EGL_TRUE,
-				EGL_NONE,
-			};
 
 			const EGLint fl9_3DisplayAttributes[] =
 			{
@@ -171,56 +151,69 @@ namespace cinder {
 				EGL_NONE,
 			};
 
-			EGLConfig config = NULL;
+#if defined(CINDER_MSW_DESKTOP)
+				mDc = dc;
+#endif
 
-			// eglGetPlatformDisplayEXT is an alternative to eglGetDisplay. It allows us to pass in display attributes, used to configure D3D11.
+
+
+
 			PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT = reinterpret_cast<PFNEGLGETPLATFORMDISPLAYEXTPROC>(eglGetProcAddress("eglGetPlatformDisplayEXT"));
 			if (!eglGetPlatformDisplayEXT)
-			{
 				return false;
-			}
 
-			//
-			// To initialize the display, we make three sets of calls to eglGetPlatformDisplayEXT and eglInitialize, with varying 
-			// parameters passed to eglGetPlatformDisplayEXT:
-			// 1) The first calls uses "defaultDisplayAttributes" as a parameter. This corresponds to D3D11 Feature Level 10_0+.
-			// 2) If eglInitialize fails for step 1 (e.g. because 10_0+ isn't supported by the default GPU), then we try again 
-			//    using "fl9_3DisplayAttributes". This corresponds to D3D11 Feature Level 9_3.
-			// 3) If eglInitialize fails for step 2 (e.g. because 9_3+ isn't supported by the default GPU), then we try again 
-			//    using "warpDisplayAttributes".  This corresponds to D3D11 Feature Level 11_0 on WARP, a D3D11 software rasterizer.
-			//
+#if defined( CINDER_MSW_DESKTOP )
+			const EGLint displayAttributes[] = {
+				EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
+				EGL_NONE
+			};
 
-			// This tries to initialize EGL to D3D11 Feature Level 10_0+. See above comment for details.
-			mDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, defaultDisplayAttributes);
+			mDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, dc, displayAttributes);
+#else
+			const EGLint displayAttributes[] = {
+				// These are the default display attributes, used to request ANGLE's D3D11 renderer.
+				// eglInitialize will only succeed with these attributes if the hardware supports D3D11 Feature Level 10_0+.
+				EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
+
+				// EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER is an optimization that can have large performance benefits on mobile devices.
+				// Its syntax is subject to change, though. Please update your Visual Studio templates if you experience compilation issues with it.
+				EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER, EGL_TRUE,
+
+				// EGL_PLATFORM_ANGLE_ENABLE_AUTOMATIC_TRIM_ANGLE is an option that enables ANGLE to automatically call 
+				// the IDXGIDevice3::Trim method on behalf of the application when it gets suspended. 
+				// Calling IDXGIDevice3::Trim when an application is suspended is a Windows Store application certification requirement.
+				EGL_PLATFORM_ANGLE_ENABLE_AUTOMATIC_TRIM_ANGLE, EGL_TRUE,
+				EGL_NONE,
+			};
+
+			mDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes);
+#endif
 			if (mDisplay == EGL_NO_DISPLAY)
-			{
 				return false;
-			}
 
-			if (eglInitialize(mDisplay, NULL, NULL) == EGL_FALSE)
-			{
-				// This tries to initialize EGL to D3D11 Feature Level 9_3, if 10_0+ is unavailable (e.g. on some mobile devices).
+			EGLint majorVersion, minorVersion;
+			if (eglInitialize(mDisplay, &majorVersion, &minorVersion) == EGL_FALSE) {
+#if defined( CINDER_MSW_DESKTOP )
+				// try again with D3D11 Feature Level 9.3 if 10.0+ is unavailable
+				const EGLint fl9_3DisplayAttributes[] = {
+					EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
+					EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_DEVICE_TYPE_HARDWARE_ANGLE,
+					EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE, 9,
+					EGL_PLATFORM_ANGLE_MAX_VERSION_MINOR_ANGLE, 3,
+					EGL_NONE,
+				};
+
 				mDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, fl9_3DisplayAttributes);
 				if (mDisplay == EGL_NO_DISPLAY)
-				{
+					return false;
+
+				if (eglInitialize(mDisplay, &majorVersion, &minorVersion) == EGL_FALSE) {
+					// NB: could try again with D3D11 Feature Level 11.0 on WARP if 9.3+ is unavailable
 					return false;
 				}
-
-				if (eglInitialize(mDisplay, NULL, NULL) == EGL_FALSE)
-				{
-					// This initializes EGL to D3D11 Feature Level 11_0 on WARP, if 9_3+ is unavailable on the default GPU.
-					mDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, warpDisplayAttributes);
-					if (mDisplay == EGL_NO_DISPLAY)
-					{
-						return false;
-					}
-
-					if (eglInitialize(mDisplay, NULL, NULL) == EGL_FALSE)
-					{
-						// If all of the calls to eglInitialize returned EGL_FALSE then an error has occurred.
-						return false;
-					}
-				}
+#else
+				return false;
+#endif
 			}
 
 			eglBindAPI(EGL_OPENGL_ES_API);
@@ -228,52 +221,47 @@ namespace cinder {
 				return false;
 
 			EGLint configCount;
-			if (!eglChooseConfig(mDisplay, configAttributes, &config, 1, &configCount) || (configCount != 1))
+			EGLConfig config;
+			if ((eglChooseConfig(mDisplay, configAttribs.data(), &config, 1, &configCount))== EGL_FALSE || (configCount != 1))
 				return false;
 
-			// Create a PropertySet and initialize with the EGLNativeWindowType.
-			PropertySet^ surfaceCreationProperties = ref new PropertySet();
-			//surfaceCreationProperties->Insert(ref new String(EGLNativeWindowTypeProperty), window);
-			surfaceCreationProperties->Insert(ref new String(EGLNativeWindowTypeProperty), mHolographicSpace.Get());
-			if (mSpatialStationaryFrameOfReference != nullptr)
+#if defined( CINDER_MSW_DESKTOP )
+			mSurface = eglCreateWindowSurface(mDisplay, config, wnd, NULL);
+#else
+			Windows::Foundation::Collections::PropertySet^ surfaceCreationProperties = ref new Windows::Foundation::Collections::PropertySet();
+			surfaceCreationProperties->Insert(ref new String(EGLNativeWindowTypeProperty), holographicSpace.Get());
+			if (mSpatialStationaryFrameOfReference.Get() != nullptr)
 			{
-				surfaceCreationProperties->Insert(ref new String(EGLBaseCoordinateSystemProperty), mSpatialStationaryFrameOfReference.Get());
+				surfaceCreationProperties->Insert(ref new String(EGLBaseCoordinateSystemProperty), frameOR.Get());
 			}
-
-			// You can configure the surface to render at a lower resolution and be scaled up to
-			// the full window size. This scaling is often free on mobile hardware.
-			//
-			// One way to configure the SwapChainPanel is to specify precisely which resolution it should render at.
-			// Size customRenderSurfaceSize = Size(800, 600);
-			// surfaceCreationProperties->Insert(ref new String(EGLRenderSurfaceSizeProperty), PropertyValue::CreateSize(customRenderSurfaceSize));
-			//
-			// Another way is to tell the SwapChainPanel to render at a certain scale factor compared to its size.
-			// e.g. if the SwapChainPanel is 1920x1280 then setting a factor of 0.5f will make the app render at 960x640
-			// float customResolutionScale = 0.5f;
-			// surfaceCreationProperties->Insert(ref new String(EGLRenderResolutionScaleProperty), PropertyValue::CreateSingle(customResolutionScale));
-
-			mSurface = eglCreateWindowSurface(mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), surfaceAttributes);
-			if (mSurface == EGL_NO_SURFACE)
-			{
-				return false;
-			}
+			mSurface = eglCreateWindowSurface(mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), surfaceAttribList);
+#endif
 
 			auto err = eglGetError();
 			if (err != EGL_SUCCESS)
 				return false;
+
+			EGLint contextAttibutes[] = {
+#if defined( CINDER_GL_ES_3 )
+				EGL_CONTEXT_CLIENT_VERSION, 3,
+#else
+				EGL_CONTEXT_CLIENT_VERSION, 2,
+#endif
+				EGL_NONE
+			};
 
 			mContext = eglCreateContext(mDisplay, config, EGL_NO_CONTEXT, contextAttibutes);
 			if (mContext == EGL_NO_CONTEXT)
 				return false;
 			checkGlStatus();
 
-			eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
-			if (eglGetError() != EGL_SUCCESS)
+			if(eglMakeCurrent(mDisplay, mSurface, mSurface, mContext) == EGL_FALSE)
 				return false;
 			checkGlStatus();
 
 			gl::Environment::setEs();
 			checkGlStatus();
+
 
 			std::shared_ptr<gl::PlatformDataAngle> platformData(new gl::PlatformDataAngle(mContext, mDisplay, mSurface, config));
 			platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
@@ -286,7 +274,6 @@ namespace cinder {
 
 			eglSwapInterval(mDisplay, 0);
 			checkGlStatus();
-
 			return true;
 		}
 
@@ -442,7 +429,7 @@ namespace cinder {
 
 		void RendererImplGlAngle::defaultResize() const
 		{
-			checkGlStatus();
+			//checkGlStatus();
 
 #if defined( CINDER_MSW_DESKTOP )
 			::RECT clientRect;
@@ -450,27 +437,35 @@ namespace cinder {
 			int width = clientRect.right - clientRect.left;
 			int height = clientRect.bottom - clientRect.top;
 #else
-			float widthf, heightf;
-			EGLint panelWidth = 0;
-			EGLint panelHeight = 0;
-			eglQuerySurface(mDisplay, mSurface, EGL_WIDTH, &panelWidth);
-			eglQuerySurface(mDisplay, mSurface, EGL_HEIGHT, &panelHeight);
-			int width = (int)panelWidth;
-			int height = (int)panelHeight;
+
 #endif
 			if (mHolographicSpace == nullptr) {
+				float widthf, heightf;
+				winrt::GetPlatformWindowDimensions(mWnd.Get(), &widthf, &heightf);
+				int width = (int)widthf;
+				int height = (int)heightf;
 				gl::viewport(0, 0, width, height);
 				gl::setMatricesWindow(width, height);
+			}
+			else {
+					
 			}
 		}
 
 		void RendererImplGlAngle::swapBuffers() const
 		{
-			//auto status = ::eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
-			//assert(status);
+
+			auto status = ::eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
+			assert(status);
+
+
 			if (eglSwapBuffers(mDisplay, mSurface) != GL_TRUE)
 			{
 				CI_LOG_E("eglSwapBuffers");
+				if (mHolographicSpace != nullptr)
+				{
+			
+				}
 
 			}
 		}

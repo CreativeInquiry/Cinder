@@ -87,7 +87,7 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_SAMPLER_CUBE] = "SAMPLER_CUBE";
 
 
-		sSymbols[GL_HALF_FLOAT] = "HALF_FLOAT";
+		
 #if ! defined( CINDER_GL_ES )
 		sSymbols[GL_SAMPLER_BUFFER] = "SAMPLER_BUFFER";
 		sSymbols[GL_UNSIGNED_INT_SAMPLER_BUFFER] = "UNSIGNED_INT_SAMPLER_BUFFER";
@@ -105,6 +105,7 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_ELEMENT_ARRAY_BUFFER] = "GL_ELEMENT_ARRAY_BUFFER";
 		
 #if ! defined( CINDER_GL_ES_2 )
+		sSymbols[GL_HALF_FLOAT] = "HALF_FLOAT";
 		sSymbols[GL_PIXEL_PACK_BUFFER] = "GL_PIXEL_PACK_BUFFER";
 		sSymbols[GL_PIXEL_UNPACK_BUFFER] = "GL_PIXEL_UNPACK_BUFFER";
 		sSymbols[GL_COPY_READ_BUFFER] = "GL_COPY_READ_BUFFER";
@@ -150,12 +151,15 @@ std::string	constantToString( GLenum constant )
 #endif		
 
 		sSymbols[GL_RED] = "GL_RED";
+
+
+		sSymbols[GL_RGBA4] = "GL_RGBA4";
+		sSymbols[GL_RGB5_A1] = "GL_RGB5_A1";
+#if !defined( CINDER_GL_ES_2 )
 		sSymbols[GL_RG] = "GL_RG";
 		sSymbols[GL_R8] = "GL_R8";
 		sSymbols[GL_RG8] = "GL_RG8";
 		sSymbols[GL_RGB8] = "GL_RGB8";
-		sSymbols[GL_RGBA4] = "GL_RGBA4";
-		sSymbols[GL_RGB5_A1] = "GL_RGB5_A1";
 		sSymbols[GL_RGBA8] = "GL_RGBA8";
 		sSymbols[GL_R16F] = "GL_R16F";
 		sSymbols[GL_RG16F] = "GL_RG16F";
@@ -165,10 +169,9 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_RG32F] = "GL_RG32F";
 		sSymbols[GL_RGB32F] = "GL_RGB32F";
 		sSymbols[GL_RGBA32F] = "GL_RGBA32F";
-		
 		sSymbols[GL_R11F_G11F_B10F] = "GL_R11F_G11F_B10F";
 		sSymbols[GL_RGB9_E5] = "GL_RGB9_E5";
-		
+#endif
 #if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_R8I] = "GL_R8I";
 		sSymbols[GL_R8UI] = "GL_R8UI";
@@ -251,10 +254,7 @@ std::string	constantToString( GLenum constant )
 
 		sSymbols[GL_DEPTH_COMPONENT] = "GL_DEPTH_COMPONENT";
 		sSymbols[GL_DEPTH_COMPONENT16] = "GL_DEPTH_COMPONENT16";
-		sSymbols[GL_DEPTH_COMPONENT24] = "GL_DEPTH_COMPONENT24";
-
 		sSymbols[GL_FRAMEBUFFER] = "GL_FRAMEBUFFER";
-		sSymbols[GL_DRAW_FRAMEBUFFER] = "GL_DRAW_FRAMEBUFFER";
 
 		// framebuffer attachments
 		sSymbols[GL_STENCIL_ATTACHMENT] = "GL_STENCIL_ATTACHMENT";
@@ -271,6 +271,8 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_COLOR_ATTACHMENT7] = "GL_COLOR_ATTACHMENT7";
 		sSymbols[GL_COLOR_ATTACHMENT8] = "GL_COLOR_ATTACHMENT8";
 		sSymbols[GL_COLOR_ATTACHMENT9] = "GL_COLOR_ATTACHMENT9";
+		sSymbols[GL_DEPTH_COMPONENT24] = "GL_DEPTH_COMPONENT24";
+		sSymbols[GL_DRAW_FRAMEBUFFER] = "GL_DRAW_FRAMEBUFFER";
 #endif // ! defined( CINDER_GL_ES_2 )
 		
 		initialized = true;
