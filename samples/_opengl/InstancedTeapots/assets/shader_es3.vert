@@ -1,21 +1,20 @@
 #version 300 es
+precision highp float;
 
-uniform mat4	ciModelViewProjection;
-uniform mat3	ciNormalMatrix;
+uniform mat4 uHolographicViewProjectionMatrix[2];
+uniform mat4 ciModelViewProjection;
+uniform mat4 ciModelMatrix;
+uniform mat3 ciNormalMatrix;
 
-in vec4		ciPosition;
-in vec2		ciTexCoord0;
-in vec3		ciNormal;
-in vec4		ciColor;
-in vec3		vInstancePosition; // per-instance position variable
-out highp vec2	TexCoord;
-out lowp vec4	Color;
-out highp vec3	Normal;
+in vec4 ciPosition;
+in vec3 ciNormal;
+
+out vec4 vWorldPosition;
+out vec3 vNormal;
 
 void main( void )
 {
-	gl_Position	= ciModelViewProjection * ( 4.0 * ciPosition + vec4( vInstancePosition, 0 ) );
-	Color 		= ciColor;
-	TexCoord	= ciTexCoord0;
-	Normal		= ciNormalMatrix * ciNormal;
+	vWorldPosition = ciModelMatrix * ciPosition;
+	vNormal = ciNormalMatrix * ciNormal;
+	gl_Position = uHolographicViewProjectionMatrix[0] * ciPosition;
 }

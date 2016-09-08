@@ -104,8 +104,12 @@
     <Filter Include="Source Files\msw">
       <UniqueIdentifier>{cb0780f7-8bea-4fcd-8542-84a957a3bdd2}</UniqueIdentifier>
     </Filter>
+
     <Filter Include="Header Files\app\msw">
       <UniqueIdentifier>{5a1e58a2-ec24-4114-ae68-d20762baec08}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="Source Files\r8brain">
+      <UniqueIdentifier>{11f14c99-8ad6-4415-bdd9-822ab7aa82da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -675,6 +679,33 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\msw\RendererImplGlAngle.h">
       <Filter>Header Files\app\msw</Filter>
+	</ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPBlockConvolver.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPFIRFilter.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPFracInterpolator.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPRealFFT.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPResampler.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPSincFilterGen.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\fft4g.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\r8bbase.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\r8bconf.h">
+      <Filter>Source Files\r8brain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1297,5 +1328,8 @@
       <Filter>Source Files\msw</Filter>
     </ClCompile>
     <ClCompile Include="..\src\freetype\bdf\bdflib.c" />
+    <ClCompile Include="..\src\r8brain\r8bbase.cpp">
+      <Filter>Source Files\r8brain</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
